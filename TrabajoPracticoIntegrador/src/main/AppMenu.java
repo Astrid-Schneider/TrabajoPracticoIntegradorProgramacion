@@ -4,11 +4,12 @@
  */
 package main;
 
-
 import entities.Mascota;
 import service.MascotaService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -87,10 +88,25 @@ public class AppMenu {
             mascota.setRaza(raza);
             mascota.setDuenio(duenio);
 
-            if (!fechaStr.isBlank()) {
-                LocalDate fecha = LocalDate.parse(fechaStr);
-                mascota.setFechaNacimiento(fecha);
-            }
+           if (!fechaStr.isBlank()) {
+    try {
+        LocalDate fecha;
+
+        if (fechaStr.contains("/")) {
+            // formato dd/MM/yyyy, ejemplo 20/11/2020
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            fecha = LocalDate.parse(fechaStr, formatter);
+        } else {
+            // formato por defecto yyyy-MM-dd, ejemplo 2020-11-20
+            fecha = LocalDate.parse(fechaStr);
+        }
+
+        mascota.setFechaNacimiento(fecha);
+
+    } catch (DateTimeParseException e) {
+        System.out.println("Formato de fecha invalido. Use 2020-11-20 o 20/11/2020. No se guardara la fecha.");
+    }
+}
 
             mascotaService.crearMascota(mascota);
 
