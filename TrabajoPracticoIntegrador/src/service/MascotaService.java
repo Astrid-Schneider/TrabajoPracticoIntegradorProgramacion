@@ -33,6 +33,14 @@ public class MascotaService {
 
         mascotaDao.crear(mascota);
     }
+    
+    public List<Mascota> buscarPorDuenio(String duenio) throws Exception {
+        if (duenio == null || duenio.isBlank()) {
+        throw new IllegalArgumentException("El duenio no puede estar vacio");
+    }
+
+    return mascotaDao.buscarPorDuenio(duenio);
+}
 
     public Mascota buscarPorId(Long id) throws Exception {
         return mascotaDao.leer(id);

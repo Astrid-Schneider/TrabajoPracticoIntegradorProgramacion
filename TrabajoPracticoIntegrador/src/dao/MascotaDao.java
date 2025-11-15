@@ -6,6 +6,7 @@ package dao;
 
 import config.DatabaseConnection;
 import entities.Mascota;
+import entities.Microchip;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -235,7 +236,45 @@ public void crear(Mascota entidad) throws Exception {
             ps.executeUpdate();
         }
     }
+    public List<Mascota> buscarPorDuenio(String duenioBuscado) throws Exception {
+    List<Mascota> resultado = new ArrayList<>();
 
-    // Acá vamos a escribir los métodos del DAO
+    String sql = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id " +
+                 "FROM mascota " +
+                 "WHERE eliminado = 0 AND UPPER(duenio) LIKE ?";
+
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, "%" + duenioBuscado.toUpperCase() + "%");
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Mascota m = new Mascota();
+                m.setId(rs.getLong("id"));
+                m.setEliminado(rs.getBoolean("eliminado"));
+                m.setNombre(rs.getString("nombre"));
+                m.setEspecie(rs.getString("especie"));
+                m.setRaza(rs.getString("raza"));
+                m.setFechaNacimiento(rs.getDate("fecha_nacimiento") != null
+                        ? rs.getDate("fecha_nacimiento").toLocalDate()
+                        : null);
+                m.setDuenio(rs.getString("duenio"));
+
+                Long microchipId = rs.getLong("microchip_id");
+                if (!rs.wasNull()) {
+                    Microchip micro = new Microchip();
+                    micro.setId(microchipId);
+                    m.setMicrochip(micro);
+                }
+
+                resultado.add(m);
+            }
+        }
+    }
+
+    return resultado;
+}
+
 }
 
