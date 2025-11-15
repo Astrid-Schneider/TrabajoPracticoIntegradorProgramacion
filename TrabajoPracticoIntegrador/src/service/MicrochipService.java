@@ -9,9 +9,9 @@ import entities.Microchip;
 
 import java.util.List;
 
-public class MicrochipService {
+public class MicrochipService implements GenericService<Microchip> {
 
-    private MicrochipDao microchipDao;
+    private final MicrochipDao microchipDao;;
 
     public MicrochipService() {
         this.microchipDao = new MicrochipDao();
@@ -53,5 +53,32 @@ public class MicrochipService {
             throw new IllegalArgumentException("Id invalido");
         }
         microchipDao.eliminar(id);
+    }
+    
+        // ==== Metodos requeridos por GenericService ====
+
+    @Override
+    public void insertar(Microchip entidad) throws Exception {
+        crearMicrochip(entidad);
+    }
+
+    @Override
+    public Microchip getById(Long id) throws Exception {
+        return buscarPorId(id);
+    }
+
+    @Override
+    public List<Microchip> getAll() throws Exception {
+        return listarTodos();
+    }
+
+    @Override
+    public void actualizar(Microchip entidad) throws Exception {
+        actualizarMicrochip(entidad);
+    }
+
+    @Override
+    public void eliminar(Long id) throws Exception {
+        eliminarMicrochip(id);
     }
 }

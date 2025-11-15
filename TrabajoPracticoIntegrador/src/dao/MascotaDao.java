@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.ArrayList;
@@ -47,38 +46,45 @@ import java.util.ArrayList;
 
 
 @Override
-public void crear(Mascota entidad) throws Exception {
+public void crear(Mascota mascota) throws Exception {
+    // version normal: abre y cierra su propia conexion
+    try (Connection con = DatabaseConnection.getConnection()) {
+        crear(mascota, con);
+    }
+}
 
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+// version para usar dentro de una transaccion (usa una Connection externa)
+public void crear(Mascota mascota, Connection con) throws Exception {
+    String sql = INSERT_SQL;
 
-        boolean eliminado = entidad.getEliminado() != null ? entidad.getEliminado() : false;
+    try (PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+
+        // eliminado: si es null, lo tomamos como false
+        boolean eliminado = Boolean.TRUE.equals(mascota.getEliminado());
         ps.setBoolean(1, eliminado);
+        ps.setString(2, mascota.getNombre());
+        ps.setString(3, mascota.getEspecie());
+        ps.setString(4, mascota.getRaza());
 
-        ps.setString(2, entidad.getNombre());
-        ps.setString(3, entidad.getEspecie());
-        ps.setString(4, entidad.getRaza());
-
-        if (entidad.getFechaNacimiento() != null) {
-            ps.setDate(5, Date.valueOf(entidad.getFechaNacimiento()));
+        if (mascota.getFechaNacimiento() != null) {
+            ps.setDate(5, java.sql.Date.valueOf(mascota.getFechaNacimiento()));
         } else {
-            ps.setNull(5, Types.DATE);
+            ps.setNull(5, java.sql.Types.DATE);
         }
 
-        ps.setString(6, entidad.getDuenio());
+        ps.setString(6, mascota.getDuenio());
 
-        if (entidad.getMicrochip() != null && entidad.getMicrochip().getId() != null) {
-            ps.setLong(7, entidad.getMicrochip().getId());
+        if (mascota.getMicrochip() != null && mascota.getMicrochip().getId() != null) {
+            ps.setLong(7, mascota.getMicrochip().getId());
         } else {
-            ps.setNull(7, Types.BIGINT);
+            ps.setNull(7, java.sql.Types.BIGINT);
         }
 
         ps.executeUpdate();
 
         try (ResultSet rs = ps.getGeneratedKeys()) {
             if (rs.next()) {
-                long idGenerado = rs.getLong(1);
-                entidad.setId(idGenerado);
+                mascota.setId(rs.getLong(1));
             }
         }
     }
@@ -185,8 +191,8 @@ public void crear(Mascota entidad) throws Exception {
              PreparedStatement ps = conn.prepareStatement(UPDATE_SQL)) {
 
             // 1) eliminado
-            boolean eliminado = entidad.getEliminado() != null ? entidad.getEliminado() : false;
-            ps.setBoolean(1, eliminado);
+            boolean eliminado = Boolean.TRUE.equals(entidad.getEliminado());
+        ps.setBoolean(1, eliminado);
 
             // 2) nombre
             ps.setString(2, entidad.getNombre());
@@ -236,6 +242,7 @@ public void crear(Mascota entidad) throws Exception {
             ps.executeUpdate();
         }
     }
+    
     public List<Mascota> buscarPorDuenio(String duenioBuscado) throws Exception {
     List<Mascota> resultado = new ArrayList<>();
 
@@ -275,6 +282,7 @@ public void crear(Mascota entidad) throws Exception {
 
     return resultado;
 }
+    
+    
 
 }
-

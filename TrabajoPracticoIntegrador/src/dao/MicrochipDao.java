@@ -11,64 +11,78 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MicrochipDao implements GenericDao<Microchip> {
-        private static final String INSERT_SQL =
-            "INSERT INTO microchip (eliminado, codigo, fecha_implantacion, veterinaria, observaciones) " +
-            "VALUES (?, ?, ?, ?, ?)";
 
-    private static final String SELECT_BY_ID_SQL =
-            "SELECT id, eliminado, codigo, fecha_implantacion, veterinaria, observaciones " +
-            "FROM microchip " +
-            "WHERE id = ?";
+    private static final String INSERT_SQL
+            = "INSERT INTO microchip (eliminado, codigo, fecha_implantacion, veterinaria, observaciones) "
+            + "VALUES (?, ?, ?, ?, ?)";
 
-    private static final String SELECT_ALL_SQL =
-            "SELECT id, eliminado, codigo, fecha_implantacion, veterinaria, observaciones " +
-            "FROM microchip " +
-            "WHERE eliminado = 0";
+    private static final String SELECT_BY_ID_SQL
+            = "SELECT id, eliminado, codigo, fecha_implantacion, veterinaria, observaciones "
+            + "FROM microchip "
+            + "WHERE id = ?";
 
-    private static final String UPDATE_SQL =
-            "UPDATE microchip " +
-            "SET eliminado = ?, codigo = ?, fecha_implantacion = ?, veterinaria = ?, observaciones = ? " +
-            "WHERE id = ?";
+    private static final String SELECT_ALL_SQL
+            = "SELECT id, eliminado, codigo, fecha_implantacion, veterinaria, observaciones "
+            + "FROM microchip "
+            + "WHERE eliminado = 0";
 
-    private static final String DELETE_LOGICO_SQL =
-            "UPDATE microchip " +
-            "SET eliminado = 1 " +
-            "WHERE id = ?";
+    private static final String UPDATE_SQL
+            = "UPDATE microchip "
+            + "SET eliminado = ?, codigo = ?, fecha_implantacion = ?, veterinaria = ?, observaciones = ? "
+            + "WHERE id = ?";
+
+    private static final String DELETE_LOGICO_SQL
+            = "UPDATE microchip "
+            + "SET eliminado = 1 "
+            + "WHERE id = ?";
 
     // despues van los metodos
-
     @Override
-    public void crear(Microchip entidad) throws Exception {
+    public void crear(Microchip microchip) throws Exception {
+        // version normal: abre y cierra su propia conexion
+        try (Connection con = DatabaseConnection.getConnection()) {
+            crear(microchip, con);
+        }
+    }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+// version para usar dentro de una transaccion
+    public void crear(Microchip microchip, Connection con) throws Exception {
+        String sql = INSERT_SQL;
 
-            boolean eliminado = entidad.getEliminado() != null ? entidad.getEliminado() : false;
+        try (PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+
+            boolean eliminado = Boolean.TRUE.equals(microchip.getEliminado());
             ps.setBoolean(1, eliminado);
+            ps.setString(2, microchip.getCodigo());
 
-            ps.setString(2, entidad.getCodigo());
-
-            if (entidad.getFechaImplantacion() != null) {
-                ps.setDate(3, Date.valueOf(entidad.getFechaImplantacion()));
+            if (microchip.getFechaImplantacion() != null) {
+                ps.setDate(3, java.sql.Date.valueOf(microchip.getFechaImplantacion()));
             } else {
-                ps.setNull(3, Types.DATE);
+                ps.setNull(3, java.sql.Types.DATE);
             }
 
-            ps.setString(4, entidad.getVeterinaria());
-            ps.setString(5, entidad.getObservaciones());
+            if (microchip.getVeterinaria() != null) {
+                ps.setString(4, microchip.getVeterinaria());
+            } else {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }
+
+            if (microchip.getObservaciones() != null) {
+                ps.setString(5, microchip.getObservaciones());
+            } else {
+                ps.setNull(5, java.sql.Types.VARCHAR);
+            }
 
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    long idGenerado = rs.getLong(1);
-                    entidad.setId(idGenerado);
+                    microchip.setId(rs.getLong(1));
                 }
             }
         }
@@ -79,8 +93,7 @@ public class MicrochipDao implements GenericDao<Microchip> {
 
         Microchip microchip = null;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT_BY_ID_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(SELECT_BY_ID_SQL)) {
 
             ps.setLong(1, id);
 
@@ -111,9 +124,7 @@ public class MicrochipDao implements GenericDao<Microchip> {
 
         List<Microchip> microchips = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT_ALL_SQL);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(SELECT_ALL_SQL); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Microchip microchip = new Microchip();
@@ -144,10 +155,9 @@ public class MicrochipDao implements GenericDao<Microchip> {
             throw new IllegalArgumentException("El microchip debe tener id para poder actualizarlo");
         }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(UPDATE_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(UPDATE_SQL)) {
 
-            boolean eliminado = entidad.getEliminado() != null ? entidad.getEliminado() : false;
+            boolean eliminado = Boolean.TRUE.equals(entidad.getEliminado());
             ps.setBoolean(1, eliminado);
 
             ps.setString(2, entidad.getCodigo());
@@ -174,8 +184,7 @@ public class MicrochipDao implements GenericDao<Microchip> {
             throw new IllegalArgumentException("El id no puede ser null para eliminar");
         }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(DELETE_LOGICO_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(DELETE_LOGICO_SQL)) {
 
             ps.setLong(1, id);
 
