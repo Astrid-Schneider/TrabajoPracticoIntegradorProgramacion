@@ -14,11 +14,12 @@ El sistema permite realizar operaciones CRUD completas y una transacción con co
 - Nazareno Romero
 - Rodrigo Angelelli
 - Tomás Anchorena
-**Comisiones 5 & 7**
 
-Objetivos Académicos
+*Comisiones 5 & 7*
+---
+**Objetivos Académicos**
+
 Este proyecto integra los siguientes conceptos:
-________________________________________
 1. Arquitectura en Capas (Layered Architecture)
 - Separación clara de responsabilidades:
  - Presentación (main/ui)
@@ -68,6 +69,7 @@ ________________________________________
 - Generic Pattern → DAO y Service reutilizables
 --- 
 **Funcionalidades Implementadas**
+
 Mascotas:
 1. Crear mascota
 2. Listar todas las mascotas
@@ -119,18 +121,18 @@ Luego ejecutar:
 1. En config/DatabaseConnection.java:
 ```java
 private static final String URL = "jdbc:mysql://localhost:3306/tpibasedatos";
-private static final String USER = "root";
-private static final String PASSWORD = "";
+private static final String USER = "unUsuario";
+private static final String PASSWORD = "unaContraseña";
 ```
-Modificar si tu MySQL usa otra contraseña.
+
 ---
 **Ejecutar el Proyecto**
 
 Desde NetBeans:
 - Abrir proyecto
 - Ejecutar Main.java o AppMenu
-Aparecerá el menú:
-==== MENU MASCOTAS ====
+- Aparecerá el menú:
+- ==== MENU MASCOTAS ====
 1. Crear mascota
 2. Listar mascotas
 3. Buscar mascota por id
@@ -143,6 +145,7 @@ Aparecerá el menú:
 10. Actualizar microchip
 11. Eliminar microchip
 12. Crear mascota y microchip (transaccion)
+
 0. Salir
 ---
 **Ejemplo de Uso**
@@ -152,8 +155,9 @@ Aparecerá el menú:
 4. Crea microchip + mascota juntos.
 Si la creación del microchip falla → rollback.
 ---
-**Modelo de Datos (aca va el UML)** 
-- microchip (1)  ←── UNIQUE FK ── (1) mascota
+**Modelo de Datos(UML)** 
+- microchip (1)  ← UNIQUE FK ── (1) mascota
+
 *Tabla microchip*
 - id (PK)
 - eliminado
@@ -161,6 +165,7 @@ Si la creación del microchip falla → rollback.
 - fecha_implantacion
 - veterinaria
 - observaciones
+
 *Tabla mascota*
 - id (PK)
 - eliminado
@@ -170,17 +175,18 @@ Si la creación del microchip falla → rollback.
 - fecha_nacimiento
 - duenio
 - microchip_id (FK UNIQUE → microchip.id)
+
 *Relación unidireccional: Mascota conoce a Microchip.*
 ---
 **Reglas de Negocio**
-- El dueño no puede ser vacío
-- Nombre y especie son obligatorio
-- Microchip debe existir antes de asociars
-- No se listan registros eliminado
-- No se puede actualizar una mascota sin I
+- El dueño no puede "ser" vacío
+- Nombre y especie son obligatorios
+- Microchip debe existir antes de asociarse
+- No se listan registros eliminados
+- No se puede actualizar una mascota sin ID
 - Transacción completa Mascota–Microchip con rollback
 
-Video demostración
+**Video demostración**
 
 (Agregar link YouTube o Drive cuando lo graben. Obligatorio según la rúbrica.)
 
