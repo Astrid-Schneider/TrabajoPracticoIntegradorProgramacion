@@ -4,6 +4,8 @@ package dao;
 import config.DatabaseConnection;
 import entities.Mascota;
 import entities.Microchip;
+import dao.MicrochipDao;
+
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -38,6 +40,8 @@ public class MascotaDao implements GenericDao<Mascota> {
             = "UPDATE mascota "
             + "SET eliminado = 1 "
             + "WHERE id = ?";
+    private MicrochipDao microchipDao = new MicrochipDao();
+
 
     @Override
     public void crear(Mascota mascota) throws Exception {
@@ -115,9 +119,9 @@ public class MascotaDao implements GenericDao<Mascota> {
                 mascota.setDuenio(rs.getString("duenio"));
 
                 // Seteamos el microchip
-                Microchip micro = new Microchip();
-                micro.setId(microchipId);
-                mascota.setMicrochip(micro);
+                Microchip microchip = microchipDao.buscarPorId(microchipId);
+                mascota.setMicrochip(microchip);
+        
 
                 resultado = mascota;
             }
@@ -206,12 +210,12 @@ public Mascota buscarPorId(Long id) throws Exception {
                     // microchip_id puede ser null
                     long microchipId = rs.getLong("microchip_id");
                     if (!rs.wasNull()) {
-                        entities.Microchip microchip = new entities.Microchip();
-                        microchip.setId(microchipId);
-                        mascota.setMicrochip(microchip);
+                    Microchip microchip = microchipDao.leer(microchipId);
+                    mascota.setMicrochip(microchip);
                     } else {
-                        mascota.setMicrochip(null);
-                    }
+                      mascota.setMicrochip(null);
+}
+    
                 }
             }
         }
@@ -243,14 +247,14 @@ public Mascota buscarPorId(Long id) throws Exception {
 
                 mascota.setDuenio(rs.getString("duenio"));
 
-                long microchipId = rs.getLong("microchip_id");
-                if (!rs.wasNull()) {
-                    entities.Microchip microchip = new entities.Microchip();
-                    microchip.setId(microchipId);
-                    mascota.setMicrochip(microchip);
-                } else {
-                    mascota.setMicrochip(null);
+            long microchipId = rs.getLong("microchip_id");
+            if (!rs.wasNull()) {
+                Microchip microchip = microchipDao.leer(microchipId);
+                mascota.setMicrochip(microchip);
+            }   else {
+            mascota.setMicrochip(null);
                 }
+
 
                 mascotas.add(mascota);
             }
