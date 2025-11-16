@@ -1,16 +1,20 @@
-Trabajo Práctico Integrador – Programación 2
-Sistema de Gestión de Mascotas y Microchips
-Tecnicatura Universitaria en Programación
-Universidad Tecnológica Nacional
-
+# Trabajo Práctico Integrador – Programación 2
+___
+# Sistema de Gestión de Mascotas y Microchips
+___
+## Tecnicatura Universitaria en Programación
+## Universidad Tecnológica Nacional
+___
 Este Trabajo Práctico Integrador implementa un sistema en Java que gestiona Mascotas y sus Microchips, trabajando con Programación Orientada a Objetos, JDBC y Arquitectura en Capas.
 Se desarrolla una relación 1 → 1 unidireccional, donde Mascota conoce a Microchip, pero no al revés.
 El sistema permite realizar operaciones CRUD completas y una transacción con commit/rollback, cumpliendo con todos los puntos de la rúbrica.
 
-Equipo
-Astrid Schneider
-(Acá agregan los demás integrantes)
-Comisión 7 – Tecnicatura Universitaria en Programación – UTN
+### Equipo
+- Astrid Schneider
+- Nazareno Romero
+- Rodrigo Angelelli
+- Tomás Anchorena
+**Comisión 5 & 7**
 
 Objetivos Académicos
 Este proyecto integra los siguientes conceptos:
