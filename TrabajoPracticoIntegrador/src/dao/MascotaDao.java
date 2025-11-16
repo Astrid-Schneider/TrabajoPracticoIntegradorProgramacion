@@ -16,87 +16,83 @@ import java.sql.Types;
 import java.util.List;
 import java.util.ArrayList;
 
-    public class MascotaDao implements GenericDao<Mascota> {
-        
-    private static final String INSERT_SQL =
-            "INSERT INTO mascota (eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+public class MascotaDao implements GenericDao<Mascota> {
 
-    private static final String SELECT_BY_ID_SQL =
-            "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id " +
-            "FROM mascota " +
-            "WHERE id = ?";
-    
-        private static final String SELECT_ALL_SQL =
-            "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id " +
-            "FROM mascota " +
-            "WHERE eliminado = 0";
-        
-            private static final String UPDATE_SQL =
-            "UPDATE mascota " +
-            "SET eliminado = ?, nombre = ?, especie = ?, raza = ?, fecha_nacimiento = ?, duenio = ?, microchip_id = ? " +
-            "WHERE id = ?";
-            
-        private static final String DELETE_LOGICO_SQL =
-        "UPDATE mascota " +
-        "SET eliminado = 1 " +
-        "WHERE id = ?";
+    private static final String INSERT_SQL
+            = "INSERT INTO mascota (eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+    private static final String SELECT_BY_ID_SQL
+            = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id "
+            + "FROM mascota "
+            + "WHERE id = ?";
 
+    private static final String SELECT_ALL_SQL
+            = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id "
+            + "FROM mascota "
+            + "WHERE eliminado = 0";
 
-@Override
-public void crear(Mascota mascota) throws Exception {
-    // version normal: abre y cierra su propia conexion
-    try (Connection con = DatabaseConnection.getConnection()) {
-        crear(mascota, con);
+    private static final String UPDATE_SQL
+            = "UPDATE mascota "
+            + "SET eliminado = ?, nombre = ?, especie = ?, raza = ?, fecha_nacimiento = ?, duenio = ?, microchip_id = ? "
+            + "WHERE id = ?";
+
+    private static final String DELETE_LOGICO_SQL
+            = "UPDATE mascota "
+            + "SET eliminado = 1 "
+            + "WHERE id = ?";
+
+    @Override
+    public void crear(Mascota mascota) throws Exception {
+        // version normal: abre y cierra su propia conexion
+        try (Connection con = DatabaseConnection.getConnection()) {
+            crear(mascota, con);
+        }
     }
-}
 
 // version para usar dentro de una transaccion (usa una Connection externa)
-public void crear(Mascota mascota, Connection con) throws Exception {
-    String sql = INSERT_SQL;
+    public void crear(Mascota mascota, Connection con) throws Exception {
+        String sql = INSERT_SQL;
 
-    try (PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
-        // eliminado: si es null, lo tomamos como false
-        boolean eliminado = Boolean.TRUE.equals(mascota.getEliminado());
-        ps.setBoolean(1, eliminado);
-        ps.setString(2, mascota.getNombre());
-        ps.setString(3, mascota.getEspecie());
-        ps.setString(4, mascota.getRaza());
+            // eliminado: si es null, lo tomamos como false
+            boolean eliminado = Boolean.TRUE.equals(mascota.getEliminado());
+            ps.setBoolean(1, eliminado);
+            ps.setString(2, mascota.getNombre());
+            ps.setString(3, mascota.getEspecie());
+            ps.setString(4, mascota.getRaza());
 
-        if (mascota.getFechaNacimiento() != null) {
-            ps.setDate(5, java.sql.Date.valueOf(mascota.getFechaNacimiento()));
-        } else {
-            ps.setNull(5, java.sql.Types.DATE);
-        }
+            if (mascota.getFechaNacimiento() != null) {
+                ps.setDate(5, java.sql.Date.valueOf(mascota.getFechaNacimiento()));
+            } else {
+                ps.setNull(5, java.sql.Types.DATE);
+            }
 
-        ps.setString(6, mascota.getDuenio());
+            ps.setString(6, mascota.getDuenio());
 
-        if (mascota.getMicrochip() != null && mascota.getMicrochip().getId() != null) {
-            ps.setLong(7, mascota.getMicrochip().getId());
-        } else {
-            ps.setNull(7, java.sql.Types.BIGINT);
-        }
+            if (mascota.getMicrochip() != null && mascota.getMicrochip().getId() != null) {
+                ps.setLong(7, mascota.getMicrochip().getId());
+            } else {
+                ps.setNull(7, java.sql.Types.BIGINT);
+            }
 
-        ps.executeUpdate();
+            ps.executeUpdate();
 
-        try (ResultSet rs = ps.getGeneratedKeys()) {
-            if (rs.next()) {
-                mascota.setId(rs.getLong(1));
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    mascota.setId(rs.getLong(1));
+                }
             }
         }
     }
-}
 
     @Override
     public Mascota leer(Long id) throws Exception {
 
         Mascota mascota = null;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT_BY_ID_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(SELECT_BY_ID_SQL)) {
 
             // Cargamos el parámetro ? con el id
             ps.setLong(1, id);
@@ -138,15 +134,12 @@ public void crear(Mascota mascota, Connection con) throws Exception {
         return mascota;
     }
 
-
     @Override
     public List<Mascota> leerTodos() throws Exception {
 
         List<Mascota> mascotas = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT_ALL_SQL);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(SELECT_ALL_SQL); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Mascota mascota = new Mascota();
@@ -187,12 +180,11 @@ public void crear(Mascota mascota, Connection con) throws Exception {
             throw new IllegalArgumentException("La mascota debe tener id para poder actualizarla");
         }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(UPDATE_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(UPDATE_SQL)) {
 
             // 1) eliminado
             boolean eliminado = Boolean.TRUE.equals(entidad.getEliminado());
-        ps.setBoolean(1, eliminado);
+            ps.setBoolean(1, eliminado);
 
             // 2) nombre
             ps.setString(2, entidad.getNombre());
@@ -234,55 +226,51 @@ public void crear(Mascota mascota, Connection con) throws Exception {
             throw new IllegalArgumentException("El id no puede ser null para eliminar");
         }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(DELETE_LOGICO_SQL)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(DELETE_LOGICO_SQL)) {
 
             ps.setLong(1, id);
 
             ps.executeUpdate();
         }
     }
-    
+
     public List<Mascota> buscarPorDuenio(String duenioBuscado) throws Exception {
-    List<Mascota> resultado = new ArrayList<>();
+        List<Mascota> resultado = new ArrayList<>();
 
-    String sql = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id " +
-                 "FROM mascota " +
-                 "WHERE eliminado = 0 AND UPPER(duenio) LIKE ?";
+        String sql = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id "
+                + "FROM mascota "
+                + "WHERE eliminado = 0 AND UPPER(duenio) LIKE ?";
 
-    try (Connection con = DatabaseConnection.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
-        ps.setString(1, "%" + duenioBuscado.toUpperCase() + "%");
+            ps.setString(1, "%" + duenioBuscado.toUpperCase() + "%");
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Mascota m = new Mascota();
-                m.setId(rs.getLong("id"));
-                m.setEliminado(rs.getBoolean("eliminado"));
-                m.setNombre(rs.getString("nombre"));
-                m.setEspecie(rs.getString("especie"));
-                m.setRaza(rs.getString("raza"));
-                m.setFechaNacimiento(rs.getDate("fecha_nacimiento") != null
-                        ? rs.getDate("fecha_nacimiento").toLocalDate()
-                        : null);
-                m.setDuenio(rs.getString("duenio"));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Mascota m = new Mascota();
+                    m.setId(rs.getLong("id"));
+                    m.setEliminado(rs.getBoolean("eliminado"));
+                    m.setNombre(rs.getString("nombre"));
+                    m.setEspecie(rs.getString("especie"));
+                    m.setRaza(rs.getString("raza"));
+                    m.setFechaNacimiento(rs.getDate("fecha_nacimiento") != null
+                            ? rs.getDate("fecha_nacimiento").toLocalDate()
+                            : null);
+                    m.setDuenio(rs.getString("duenio"));
 
-                Long microchipId = rs.getLong("microchip_id");
-                if (!rs.wasNull()) {
-                    Microchip micro = new Microchip();
-                    micro.setId(microchipId);
-                    m.setMicrochip(micro);
+                    Long microchipId = rs.getLong("microchip_id");
+                    if (!rs.wasNull()) {
+                        Microchip micro = new Microchip();
+                        micro.setId(microchipId);
+                        m.setMicrochip(micro);
+                    }
+
+                    resultado.add(m);
                 }
-
-                resultado.add(m);
             }
         }
-    }
 
-    return resultado;
-}
-    
-    
+        return resultado;
+    }
 
 }

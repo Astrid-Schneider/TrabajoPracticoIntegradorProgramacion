@@ -4,7 +4,6 @@
  */
 package entities;
 
-
 import java.time.LocalDate;
 
 public class Mascota {
@@ -25,7 +24,7 @@ public class Mascota {
     }
 
     public Mascota(Long id, Boolean eliminado, String nombre, String especie, String raza,
-                   LocalDate fechaNacimiento, String duenio, Microchip microchip) {
+            LocalDate fechaNacimiento, String duenio, Microchip microchip) {
         this.id = id;
         this.eliminado = eliminado;
         this.nombre = nombre;
@@ -103,15 +102,15 @@ public class Mascota {
 
     @Override
     public String toString() {
-        return "Mascota{" +
-                "id=" + id +
-                ", eliminado=" + eliminado +
-                ", nombre='" + nombre + '\'' +
-                ", especie='" + especie + '\'' +
-                ", raza='" + raza + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", duenio='" + duenio + '\'' +
-                ", microchip=" + microchip +
-                '}';
+        return "Mascota{"
+                + "id=" + id
+                + ", eliminado=" + eliminado
+                + ", nombre='" + nombre + '\''
+                + ", especie='" + especie + '\''
+                + ", raza='" + raza + '\''
+                + ", fechaNacimiento=" + fechaNacimiento
+                + ", duenio='" + duenio + '\''
+                + ", microchip=" + microchip
+                + '}';
     }
 }

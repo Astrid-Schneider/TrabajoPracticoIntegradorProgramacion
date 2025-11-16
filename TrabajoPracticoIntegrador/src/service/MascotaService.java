@@ -24,7 +24,6 @@ public class MascotaService implements GenericService<Mascota> {
     }
 
     // ==== CRUD normal de mascota ====
-
     public void crearMascota(Mascota mascota) throws Exception {
         // Validaciones muy basicas de ejemplo
         if (mascota.getNombre() == null || mascota.getNombre().isBlank()) {
@@ -67,7 +66,6 @@ public class MascotaService implements GenericService<Mascota> {
     }
 
     // ==== Transaccion: crear mascota + microchip juntos ====
-
     public void crearMascotaConMicrochip(Mascota mascota, Microchip microchip) throws Exception {
 
         if (mascota == null) {
@@ -139,7 +137,6 @@ public class MascotaService implements GenericService<Mascota> {
     }
 
     // ==== Metodos requeridos por GenericService ====
-
     @Override
     public void insertar(Mascota entidad) throws Exception {
         // Reusamos la logica existente

@@ -11,7 +11,9 @@ import java.util.List;
 
 public class MicrochipService implements GenericService<Microchip> {
 
-    private final MicrochipDao microchipDao;;
+    private final MicrochipDao microchipDao;
+
+    ;
 
     public MicrochipService() {
         this.microchipDao = new MicrochipDao();
@@ -54,9 +56,8 @@ public class MicrochipService implements GenericService<Microchip> {
         }
         microchipDao.eliminar(id);
     }
-    
-        // ==== Metodos requeridos por GenericService ====
 
+    // ==== Metodos requeridos por GenericService ====
     @Override
     public void insertar(Microchip entidad) throws Exception {
         crearMicrochip(entidad);

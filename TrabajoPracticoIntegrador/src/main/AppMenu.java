@@ -35,20 +35,34 @@ public class AppMenu {
             opcion = leerEntero("Ingrese una opcion: ");
 
             switch (opcion) {
-                case 1 -> crearMascota();
-                case 2 -> listarMascotas();
-                case 3 -> buscarMascotaPorId();
-                case 4 -> actualizarMascota();
-                case 5 -> eliminarMascota();
-                case 6 -> buscarMascotasPorDuenio();
-                case 7 -> crearMicrochip();
-                case 8 -> listarMicrochips();
-                case 9 -> buscarMicrochipPorId();
-                case 10 -> actualizarMicrochip();
-                case 11 -> eliminarMicrochip();
-                case 12 -> crearMascotaConMicrochipTransaccion();
-                case 0 -> System.out.println("Saliendo de la aplicacion...");
-                default -> System.out.println("Opcion invalida");
+                case 1 ->
+                    crearMascota();
+                case 2 ->
+                    listarMascotas();
+                case 3 ->
+                    buscarMascotaPorId();
+                case 4 ->
+                    actualizarMascota();
+                case 5 ->
+                    eliminarMascota();
+                case 6 ->
+                    buscarMascotasPorDuenio();
+                case 7 ->
+                    crearMicrochip();
+                case 8 ->
+                    listarMicrochips();
+                case 9 ->
+                    buscarMicrochipPorId();
+                case 10 ->
+                    actualizarMicrochip();
+                case 11 ->
+                    eliminarMicrochip();
+                case 12 ->
+                    crearMascotaConMicrochipTransaccion();
+                case 0 ->
+                    System.out.println("Saliendo de la aplicacion...");
+                default ->
+                    System.out.println("Opcion invalida");
             }
 
             System.out.println();
@@ -74,7 +88,6 @@ public class AppMenu {
     }
 
     // ========= Helpers de lectura =========
-
     private int leerEntero(String mensaje) {
         System.out.print(mensaje);
         while (!scanner.hasNextInt()) {
@@ -105,7 +118,6 @@ public class AppMenu {
     }
 
     // ========= Opciones de mascota =========
-
     private void crearMascota() {
         try {
             System.out.println("=== Crear nueva mascota ===");
@@ -248,7 +260,6 @@ public class AppMenu {
     }
 
     // ========= Opciones de microchip =========
-
     private void crearMicrochip() {
         try {
             System.out.println("=== Crear nuevo microchip ===");
@@ -286,22 +297,22 @@ public class AppMenu {
     }
 
     private void listarMicrochips() {
-    try {
-        System.out.println("=== Listado de microchips ===");
-        // ACA EL CAMBIO:
-        List<Microchip> chips = microchipService.listarTodos();
+        try {
+            System.out.println("=== Listado de microchips ===");
+            // ACA EL CAMBIO:
+            List<Microchip> chips = microchipService.listarTodos();
 
-        if (chips.isEmpty()) {
-            System.out.println("No hay microchips para mostrar");
-        } else {
-            for (Microchip m : chips) {
-                System.out.println(m);
+            if (chips.isEmpty()) {
+                System.out.println("No hay microchips para mostrar");
+            } else {
+                for (Microchip m : chips) {
+                    System.out.println(m);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Error al listar microchips: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Error al listar microchips: " + e.getMessage());
     }
-}
 
     private void buscarMicrochipPorId() {
         try {
@@ -383,7 +394,6 @@ public class AppMenu {
     }
 
     // ========= Opcion 12: transaccion mascota + microchip =========
-
     private void crearMascotaConMicrochipTransaccion() {
         try {
             System.out.println("=== Crear mascota y microchip (transaccion) ===");
@@ -453,4 +463,3 @@ public class AppMenu {
         }
     }
 }
-

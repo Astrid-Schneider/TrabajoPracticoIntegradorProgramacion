@@ -22,7 +22,7 @@ public class Microchip {
 
     // Constructor con todos los campos
     public Microchip(Long id, Boolean eliminado, String codigo, LocalDate fechaImplantacion,
-                     String veterinaria, String observaciones) {
+            String veterinaria, String observaciones) {
         this.id = id;
         this.eliminado = eliminado;
         this.codigo = codigo;
@@ -82,13 +82,13 @@ public class Microchip {
 
     @Override
     public String toString() {
-        return "Microchip{" +
-                "id=" + id +
-                ", eliminado=" + eliminado +
-                ", codigo='" + codigo + '\'' +
-                ", fechaImplantacion=" + fechaImplantacion +
-                ", veterinaria='" + veterinaria + '\'' +
-                ", observaciones='" + observaciones + '\'' +
-                '}';
+        return "Microchip{"
+                + "id=" + id
+                + ", eliminado=" + eliminado
+                + ", codigo='" + codigo + '\''
+                + ", fechaImplantacion=" + fechaImplantacion
+                + ", veterinaria='" + veterinaria + '\''
+                + ", observaciones='" + observaciones + '\''
+                + '}';
     }
 }
