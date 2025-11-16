@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package dao;
 
 import config.DatabaseConnection;
@@ -176,6 +173,42 @@ public class MicrochipDao implements GenericDao<Microchip> {
             ps.executeUpdate();
         }
     }
+    
+    public Microchip buscarPorId(Long id) throws Exception {
+
+    if (id == null) {
+        throw new IllegalArgumentException("El id no puede ser null");
+    }
+
+    String sql = "SELECT * FROM microchip WHERE id = ? AND eliminado = 0";
+    Microchip microchip = null;
+
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setLong(1, id);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                microchip = new Microchip();
+                microchip.setId(rs.getLong("id"));
+                microchip.setCodigo(rs.getString("codigo"));
+                microchip.setVeterinaria(rs.getString("veterinaria"));
+                microchip.setObservaciones(rs.getString("observaciones"));
+
+                Date fechaImplantacion = rs.getDate("fecha_implantacion");
+                if (fechaImplantacion != null) {
+                    microchip.setFechaImplantacion(fechaImplantacion.toLocalDate());
+                }
+
+                microchip.setEliminado(rs.getBoolean("eliminado"));
+            }
+        }
+    }
+
+    return microchip;
+}
+
 
     @Override
     public void eliminar(Long id) throws Exception {

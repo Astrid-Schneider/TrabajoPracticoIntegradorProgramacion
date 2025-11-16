@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package service;
 
 import config.DatabaseConnection;
@@ -135,6 +132,41 @@ public class MascotaService implements GenericService<Mascota> {
             }
         }
     }
+    
+    // === Metodo para "asociar microchip a mascotas" ===
+    public void asociarMicrochipExistente(Long idMascota, Long idMicrochip) throws Exception {
+
+    if (idMascota == null || idMicrochip == null) {
+        throw new IllegalArgumentException("Los ids de mascota y microchip no pueden ser null");
+    }
+
+    // 1) Buscar mascota y microchip
+    Mascota mascota = mascotaDao.buscarPorId(idMascota);
+    if (mascota == null || Boolean.TRUE.equals(mascota.getEliminado())) {
+        throw new Exception("No existe una mascota activa con ese id");
+    }
+
+    Microchip microchip = microchipDao.buscarPorId(idMicrochip);
+    if (microchip == null || Boolean.TRUE.equals(microchip.getEliminado())) {
+        throw new Exception("No existe un microchip activo con ese id");
+    }
+
+    // 2) Validar que la mascota no tenga ya microchip
+    if (mascota.getMicrochip() != null && mascota.getMicrochip().getId() != null) {
+        throw new Exception("La mascota ya tiene un microchip asignado");
+    }
+
+    // 3) Validar que el microchip no esté asociado a otra mascota
+    Mascota mascotaQueUsaChip = mascotaDao.buscarPorMicrochipId(idMicrochip);
+    if (mascotaQueUsaChip != null) {
+        throw new Exception("El microchip ya está asociado a la mascota con id: " + mascotaQueUsaChip.getId());
+    }
+
+    // 4) Asociar y actualizar
+    mascota.setMicrochip(microchip);
+    mascotaDao.actualizar(mascota);
+}
+
 
     // ==== Metodos requeridos por GenericService ====
     @Override

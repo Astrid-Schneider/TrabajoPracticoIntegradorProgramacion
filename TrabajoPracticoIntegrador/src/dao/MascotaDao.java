@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package dao;
 
 import config.DatabaseConnection;
@@ -86,6 +83,95 @@ public class MascotaDao implements GenericDao<Mascota> {
             }
         }
     }
+    
+    // ==== Metodo buscar Microchip para asociacion ==
+    public Mascota buscarPorMicrochipId(Long microchipId) throws Exception {
+
+    if (microchipId == null) {
+        throw new IllegalArgumentException("El id de microchip no puede ser null");
+    }
+
+    String sql = "SELECT * FROM mascota WHERE microchip_id = ? AND eliminado = 0";
+
+    Mascota resultado = null;
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setLong(1, microchipId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Mascota mascota = new Mascota();
+                mascota.setId(rs.getLong("id"));
+                mascota.setEliminado(rs.getBoolean("eliminado"));
+                mascota.setNombre(rs.getString("nombre"));
+                mascota.setEspecie(rs.getString("especie"));
+                mascota.setRaza(rs.getString("raza"));
+                java.sql.Date fechaSql = rs.getDate("fecha_nacimiento");
+                if (fechaSql != null) {
+                    mascota.setFechaNacimiento(fechaSql.toLocalDate());
+                }
+                mascota.setDuenio(rs.getString("duenio"));
+
+                // Seteamos el microchip
+                Microchip micro = new Microchip();
+                micro.setId(microchipId);
+                mascota.setMicrochip(micro);
+
+                resultado = mascota;
+            }
+        }
+    }
+
+    return resultado;
+}
+    // === Metodo de busqueda por ID ===
+public Mascota buscarPorId(Long id) throws Exception {
+
+    if (id == null) {
+        throw new IllegalArgumentException("El id no puede ser null");
+    }
+
+    Mascota mascota = null;
+
+    String sql = "SELECT id, eliminado, nombre, especie, raza, fecha_nacimiento, duenio, microchip_id " +
+                 "FROM mascota " +
+                 "WHERE id = ? AND eliminado = 0";
+
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setLong(1, id);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                mascota = new Mascota();
+                mascota.setId(rs.getLong("id"));
+                mascota.setEliminado(rs.getBoolean("eliminado"));
+                mascota.setNombre(rs.getString("nombre"));
+                mascota.setEspecie(rs.getString("especie"));
+                mascota.setRaza(rs.getString("raza"));
+
+                Date fechaSql = rs.getDate("fecha_nacimiento");
+                if (fechaSql != null) {
+                    mascota.setFechaNacimiento(fechaSql.toLocalDate());
+                }
+
+                mascota.setDuenio(rs.getString("duenio"));
+
+                Long microchipId = rs.getLong("microchip_id");
+                if (!rs.wasNull()) {
+                    Microchip micro = new Microchip();
+                    micro.setId(microchipId);
+                    mascota.setMicrochip(micro);
+                }
+            }
+        }
+    }
+
+    return mascota;
+}
 
     @Override
     public Mascota leer(Long id) throws Exception {

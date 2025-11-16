@@ -59,6 +59,8 @@ public class AppMenu {
                     eliminarMicrochip();
                 case 12 ->
                     crearMascotaConMicrochipTransaccion();
+                case 13 ->
+                    asociarMicrochipExistenteAMascota();
                 case 0 ->
                     System.out.println("Saliendo de la aplicacion...");
                 default ->
@@ -84,6 +86,7 @@ public class AppMenu {
         System.out.println("10 - Actualizar microchip");
         System.out.println("11 - Eliminar microchip (baja logica)");
         System.out.println("12 - Crear mascota y microchip (transaccion)");
+        System.out.println("13 - Asociar microchip existente a mascota");
         System.out.println("0 - Salir");
     }
 
@@ -462,4 +465,22 @@ public class AppMenu {
             System.out.println("Error en transaccion mascota + microchip: " + e.getMessage());
         }
     }
+    
+       // ========= Opcion 13: Asociar Microchip A Mascota =========
+    private void asociarMicrochipExistenteAMascota() {
+    try {
+        System.out.println("=== Asociar microchip existente a mascota ===");
+
+        Long idMascota = leerLong("Ingrese id de la mascota: ");
+        Long idMicrochip = leerLong("Ingrese id del microchip: ");
+
+        mascotaService.asociarMicrochipExistente(idMascota, idMicrochip);
+
+        System.out.println("Microchip asociado correctamente a la mascota.");
+
+    } catch (Exception e) {
+        System.out.println("Error al asociar microchip: " + e.getMessage());
+    }
+}
+
 }
