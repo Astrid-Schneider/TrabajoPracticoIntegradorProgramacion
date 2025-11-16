@@ -145,6 +145,7 @@ Desde NetBeans:
 10. Actualizar microchip
 11. Eliminar microchip
 12. Crear mascota y microchip (transaccion)
+13. Asociar microchip existene a mascota
 
 0. Salir
 ---
