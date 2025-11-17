@@ -150,8 +150,8 @@ Desde NetBeans:
 0. Salir
 ---
 **Ejemplo de Uso**
-1. Crear Mascota (pegar algo)
-2. Crear Microchip (pegar algo)
+1. Crear Mascota 
+2. Crear Microchip
 3. Transacción (opción 12)
 4. Crea microchip + mascota juntos.
 Si la creación del microchip falla → rollback.
@@ -188,6 +188,7 @@ Si la creación del microchip falla → rollback.
 - Transacción completa Mascota–Microchip con rollback
 
 **Video demostración**
+[Link al video de Youtube](https://youtu.be/dLww6z2NEIg)
 
-(Agregar link YouTube o Drive cuando lo graben. Obligatorio según la rúbrica.)
+
 
